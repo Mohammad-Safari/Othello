@@ -1,7 +1,8 @@
 import java.util.Arrays;
 
 /**
- * 
+ * house type enumerating the only three possible values for each house in game
+ * board
  */
 enum House {
     EMPTY, BLACK, WHITE;
@@ -16,10 +17,25 @@ enum House {
                 return "\u25EF  ";
         }
     }
+    /**
+     * 
+     * @return the opposite value if not empty
+     */
+    public House theOther() {
+        if (this == WHITE)
+            return BLACK;
+        if (this == BLACK)
+            return WHITE;
+        return EMPTY;
+    }
 }
 
 /**
+ * this class roles as base class of othello game, containing displaying and
+ * disk placement, checking rules of game implementing
  * 
+ * @author M.Safari
+ * @version 1399.01.10
  */
 class Board {
     // an array containing the board houses
@@ -58,19 +74,20 @@ class Board {
     }
 
     /**
+     * put disk in coordinated house if possible
      * 
      * @param i
      * @param j
      * @param disk
-     * @return
+     * @return possiblity of puting disk in coordinated house
      */
     public boolean putDisk(int i, int j, House disk) {
-        if (isEmpty(i, j)) {
-            board[i][j] = disk;
-            return true;
-        } else {
-            return false;
-        }
+        if (isEmpty(i, j))
+            if (checkFlipDisks(i, j, disk)) {
+                flipDisks(i, j, disk);
+                return true;
+            }
+        return false;
     }
 
     /**
@@ -83,8 +100,81 @@ class Board {
         return (board[i][j] == House.EMPTY);
     }
 
+    /**
+     * moving through 8 , flipping opponents disks
+     * 
+     * @param i
+     * @param j
+     * @param disk
+     * @return
+     */
+    public void flipDisks(int i, int j, House disk) {
+        for (int iStep = -1; iStep <= 1; iStep++)
+            for (int jStep = -1; jStep <= 1; jStep++) {
+                if (iStep == 0 && jStep == 0)
+                    continue;
+                int[] destination = checkDirection(i, j, iStep, jStep, disk);
+                if (!Arrays.equals(destination, new int[] { -1, -1 })) {
+                    // this also put disk beside flipping beseiged disks
+                    for (int a = i, b = j; ((a != destination[0]) || (b != destination[1])); a += iStep, b += jStep)
+                        board[a][b] = disk;
+                }
+
+            }
+    }
+
+    /**
+     * moving through 8 , investigating possibility to flip opponents disks
+     * 
+     * @param i
+     * @param j
+     * @param disk
+     * @return
+     */
+    public boolean checkFlipDisks(int i, int j, House disk) {
+        for (int iStep = -1; iStep <= 1; iStep++)
+            for (int jStep = -1; jStep <= 1; jStep++) {
+                if (iStep == 0 && jStep == 0)
+                    continue;
+                if (!Arrays.equals(checkDirection(i, j, iStep, jStep, disk), new int[] { -1, -1 }))
+                    return true;
+            }
+        return false;
+
+    }
+
+    /**
+     * getting an empty House to check whether is it possible to flip opponents disk
+     * and returning the house that completes opponents disk beseiging, {-1, -1} means
+     * that seige is not possible in this direction
+     * 
+     * @param i
+     * @param j
+     * @param iStep
+     * @param jStep
+     * @param disk
+     * @return
+     */
+    public int[] checkDirection(int i, int j, int iStep, int jStep, House disk) {
+        for (int a = i + iStep, b = j + jStep; ((a < 8 && a >= 0) && (b < 8 & b >= 0)); a += iStep, b += jStep)
+            if (board[a][b] == House.EMPTY) {
+                break;
+            } else if (board[a][b] == disk) {
+                //meaning if there is any opposite color to beseige    
+                if (board[a - iStep][b - jStep] == disk.theOther())
+                return new int[] { a, b };
+                else
+                // meaning that in this direction two same color are adjacent
+                    break;
+            }
+        return new int[] { -1, -1 };
+    }
+
     public static void main(String[] args) {
         Board test = new Board();
+
+        test.displayBoard();
+        test.putDisk(4, 2, House.BLACK);
         test.displayBoard();
     }
 
