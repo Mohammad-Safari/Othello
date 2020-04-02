@@ -59,7 +59,7 @@ public class Board {
     /**
      * displaying baord simply with ⚫ ⚪ ◯ charactars defined in house type
      */
-    public void displayBoard() {
+    public void displayBoard(Player player) {
         // i showing each row, j showing each item in each row
         // first row the alphabet(mapping column)
         for (int j = 0; j < 8; j++)
@@ -69,9 +69,14 @@ public class Board {
         for (int i = 0; i < 8; i++) {
             System.out.printf("%d ", i + 1);
             for (int j = 0; j < 8; j++)
-                System.out.print(board[i][j].disk());
+                // content of each house
+                System.out.print((checkHouse(i, j, player.disk) ? "\033[46m" : "") + board[i][j].disk() + "\033[0m");
             System.out.println();
         }
+        // more description about playing player
+        System.out.println(((player.disk == House.WHITE) ? "White" : "Black") + " player : " + player.disk.disk() + "X "
+                + player.getDiskNum());
+
     }
 
     /**
@@ -121,8 +126,11 @@ public class Board {
                 if (!Arrays.equals(destination, new int[] { -1, -1 })) {
                     // this also put disk beside flipping beseiged disks
                     for (int a = i, b = j; ((a != destination[0]) || (b != destination[1])); a += iStep, b += jStep) {
-                        board[a][b] = player.disk;
+                        // the if content actually flips the opponents disk
+                        if (!isEmpty(a, b))
+                            player.getOpponent().decreaseDisks();
                         player.increaseDisks();
+                        board[a][b] = player.disk;
                     }
                 }
 

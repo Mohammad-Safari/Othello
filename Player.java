@@ -7,6 +7,7 @@
 public class Player {
     public final House disk;
     private int diskNum;
+    private Player opponent;
 
     public Player(House disk) {
         if (disk == House.EMPTY)
@@ -28,6 +29,27 @@ public class Player {
      */
     public void increaseDisks() {
         diskNum++;
+    }
+
+    /**
+     * 
+     */
+    public void decreaseDisks() {
+        diskNum--;
+    }
+
+    /**
+     * @param opponent the opponent to set
+     */
+    public void setOpponent(Player opponent) {
+        this.opponent = opponent;
+    }
+
+    /**
+     * @return the opponent
+     */
+    public Player getOpponent() {
+        return opponent;
     }
 
 }
