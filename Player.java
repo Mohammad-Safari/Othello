@@ -15,6 +15,18 @@ public class Player {
         else
             this.disk = disk;
         diskNum = 2;
+        // opponent should be set later
+    }
+
+    /**
+     * cloning a player
+     * 
+     * @param player
+     */
+    public Player(House disk, int diskNum) {
+        this.disk = disk;
+        this.diskNum = diskNum;
+        // opponent should be set later
     }
 
     /**

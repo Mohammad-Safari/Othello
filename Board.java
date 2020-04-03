@@ -57,6 +57,21 @@ public class Board {
     }
 
     /**
+     * cloning the board
+     * 
+     * @param source
+     */
+    public Board(Board origin) {
+        this.board = new House[8][8];
+        for (int i = 0; i < 8; i++) {
+            this.board[i] = new House[8];
+            for (int j = 0; j < 8; j++) {
+                this.board[i][j] = origin.board[i][j];
+            }
+        }
+    }
+
+    /**
      * displaying baord simply with ⚫ ⚪ ◯ charactars defined in house type
      */
     public void displayBoard(Player player) {
@@ -209,12 +224,31 @@ public class Board {
         return false;
     }
 
+    /**
+     * checking possibilty of player movement
+     */
     public boolean passTurn(Player player) {
         for (int i = 0; i < 8; i++)
             for (int j = 0; j < 8; j++)
                 if (checkHouse(i, j, player.disk))
                     return false;
         return true;
+    }
+
+    /**
+     * counting the whole board
+     * 
+     * @param color
+     * @return
+     */
+    public int Score(Player player) {
+        int score = 0;
+        for (int i = 0; i < 8; i++)
+            for (int j = 0; j < 8; j++) {
+                if (board[i][j] == player.disk)
+                    score++;
+            }
+        return score;
     }
 
 }
