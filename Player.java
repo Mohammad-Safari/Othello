@@ -37,14 +37,14 @@ public class Player {
     }
 
     /**
-     * 
+     * increases owned disks
      */
     public void increaseDisks() {
         diskNum++;
     }
 
     /**
-     * 
+     * decreases owned disks
      */
     public void decreaseDisks() {
         diskNum--;

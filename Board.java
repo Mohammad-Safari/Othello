@@ -74,7 +74,7 @@ public class Board {
     /**
      * displaying baord simply with ⚫ ⚪ ◯ charactars defined in house type
      */
-    public void displayBoard(Player player) {
+    public void displayBoard(Player player, int iLast, int jLast) {
         // i showing each row, j showing each item in each row
         // first row the alphabet(mapping column)
         for (int j = 0; j < 8; j++)
@@ -85,7 +85,9 @@ public class Board {
             System.out.printf("%d ", i + 1);
             for (int j = 0; j < 8; j++)
                 // content of each house
-                System.out.print((checkHouse(i, j, player.disk) ? "\033[46m" : "") + board[i][j].disk() + "\033[0m");
+                System.out.print(
+                        (checkHouse(i, j, player.disk) ? "\033[46m" : ((i == iLast && j == jLast) ? "\033[41m" : ""))
+                                + board[i][j].disk() + "\033[0m");
             System.out.println();
         }
         // more description about playing player
@@ -113,6 +115,7 @@ public class Board {
     }
 
     /**
+     * checking possiblity of placing disk placement
      * 
      * @param i
      * @param j
@@ -139,11 +142,15 @@ public class Board {
                     continue;
                 int[] destination = checkDirection(i, j, iStep, jStep, player.disk);
                 if (!Arrays.equals(destination, new int[] { -1, -1 })) {
-                    // this also put disk beside flipping beseiged disks
-                    for (int a = i, b = j; ((a != destination[0]) || (b != destination[1])); a += iStep, b += jStep) {
+                    // first put disk then flipping beseiged disks
+                    if (board[i][j] != player.disk) {
+                        player.increaseDisks();
+                        board[i][j] = player.disk;
+                    }
+                    for (int a = i + iStep, b = j + jStep; ((a != destination[0])
+                            || (b != destination[1])); a += iStep, b += jStep) {
                         // the if content actually flips the opponents disk
-                        if (!isEmpty(a, b))
-                            player.getOpponent().decreaseDisks();
+                        player.getOpponent().decreaseDisks();
                         player.increaseDisks();
                         board[a][b] = player.disk;
                     }
@@ -236,7 +243,7 @@ public class Board {
     }
 
     /**
-     * counting the whole board
+     * counting the whole board for a specific color
      * 
      * @param color
      * @return
